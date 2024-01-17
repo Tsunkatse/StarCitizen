@@ -1,3 +1,25 @@
+<#
+    .SYNOPSIS
+    PowerShell script that deletes Star Citizen stuff
+
+    THIS CODE IS MADE AVAILABLE AS IS, WITHOUT WARRANTY OF ANY KIND. THE ENTIRE 
+    RISK OF THE USE OR THE RESULTS FROM THE USE OF THIS CODE REMAINS WITH THE USER.
+
+    .DESCRIPTION
+    Removes Star Citizen stuff
+    * USER folders
+    * Shared Cache
+
+    .NOTES
+    USE AT YOUR OWN RISK
+
+    .INPUTS
+    Nothing
+
+    .EXAMPLE
+    .\CleanStarCitizen.ps1
+#>
+
 Write-Host "`nWe can perform below operations.`n" -ForegroundColor Cyan
 Write-Host "           1.  Delete LIVE\USER folder" -ForegroundColor Yellow
 Write-Host "           2.  Delete PTU\USER folder" -ForegroundColor Yellow 
@@ -13,6 +35,7 @@ if ($Actions -eq "") {
     Exit
 }
 
+$BaseFolder = "C:\Program Files\Roberts Space Industries\StarCitizen\"
 $Actions = $Actions.Trim()
 $Actions = $Actions.Split(',')
 $CheckActions = Compare-Object -ReferenceObject $Actions -DifferenceObject @(1..7)
@@ -23,8 +46,16 @@ if ($CheckActions | Where-Object { $_.SideIndicator -eq "<=" }) {
 
 # Delete LIVE\USER
 if ($Actions -contains 1 -or $Actions -contains 7) { 
-    Write-Host "Deleting LIVE\USER folder"
-    Remove-Item -LiteralPath "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\USER" -Recurse
+    $CurrentFolder = $BaseFolder + "LIVE\USER"
+
+    if (Test-Path -Path $CurrentFolder) {
+        Write-Host "Deleting LIVE\USER folder"
+        Remove-Item -LiteralPath $CurrentFolder -Recurse
+    }
+    else {
+        Write-Host "$($CurrentFolder) does not exist" -ForegroundColor Yellow
+    }
+    
 } 
 
 # Delete PTU\USER
